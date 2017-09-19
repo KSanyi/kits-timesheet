@@ -1,28 +1,50 @@
-package hu.kits.timesheet.schedule;
+package hu.bankmonitor.schedule;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class WeeklySchedule {
 
-	public final List<DailySchedule> days;
+	private final Map<Day, DailySchedule> dailySchedule;
 
-	public WeeklySchedule(List<DailySchedule> days) {
-		this.days = days;
+	public WeeklySchedule(Map<Day, DailySchedule> dailySchedule) {
+		this.dailySchedule = dailySchedule;
+	}
+
+	public DailySchedule dailySchedule(Day day) {
+		return dailySchedule.get(day);
 	}
 	
 	int hoursWorked(String workerName) {
-		return days.stream().mapToInt(day -> day.hoursWorked(workerName)).sum();
+		return dailySchedule.values().stream().mapToInt(day -> day.hoursWorked(workerName)).sum();
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("");
-		for(int i=1;i<=5;i++) {
-			sb.append("day " + i + "\n");
-			sb.append(days.get(i-1));
-			sb.append("\n");
+		
+		for(Day day : dailySchedule.keySet()) {
+			sb.append(day).append("\n");
+			sb.append(dailySchedule.get(day)).append("\n");
 		}
-		return sb.toString();
+		sb.append(Arrays.asList("1", "2", "3").stream().map(worker -> worker + ": " + hoursWorked(worker)).collect(Collectors.joining(", ")));
+		return sb.append("\n").toString();
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if(other == this) return true;
+		if(other == null || !(other instanceof WeeklySchedule)) return false;
+		return ((WeeklySchedule)other).dailySchedule.equals(dailySchedule);
+	}
+	
+	@Override
+	public int hashCode() {
+		return dailySchedule.hashCode();
 	}
 	
 }
@@ -62,33 +84,57 @@ class DailySchedule {
 		return sb.toString();
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		if(other == this) return true;
+		if(other == null || !(other instanceof DailySchedule)) return false;
+		return ((DailySchedule)other).schedules.equals(schedules);
+	}
+	
+	@Override
+	public int hashCode() {
+		return schedules.hashCode();
+	}
+	
 }
 
 class WorkerSchedule {
 	
 	final Worker worker;
 	
-	final int from;
-	
-	final int to;
+	final Interval workHours;
 	
 	int length() {
-		return to - from + 1;
+		return workHours.length();
 	}
 
-	public WorkerSchedule(Worker worker, int from, int to) {
+	public WorkerSchedule(Worker worker, Interval workHours) {
 		this.worker = worker;
-		this.from = from;
-		this.to = to;
+		this.workHours = workHours;
 	}
 
-	public boolean workAt(int time) {
-		return from <= time && time <= to;
+	public boolean workAt(int hour) {
+		return workHours.contains(hour);
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if(other == this) return true;
+		if(other == null || !(other instanceof WorkerSchedule)) return false;
+		WorkerSchedule otherSchedule = (WorkerSchedule)other;
+		return otherSchedule.worker.equals(worker) && otherSchedule.workHours.equals(workHours);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(worker, workHours);
 	}
 	
 }
 
 class Worker {
+	
+	final static int WEEKLY_HOURS = 40;
 	
 	final String name;
 	
@@ -98,8 +144,83 @@ class Worker {
 		this.name = name;
 	}
 
-	void work(int hours) {
-		hoursWorked += hours;
+	void work(Interval workHours) {
+		hoursWorked += workHours.length();
+		if(hoursWorked > WEEKLY_HOURS) {
+			throw new IllegalStateException("Too many work hours");
+		}
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		if(other == this) return true;
+		if(other == null || !(other instanceof Interval)) return false;
+		return ((Worker)other).name.equals(name);
+	}
+	
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+	
+}
+
+enum Day {
+	MON(Interval.of(10, 17)),
+	TUE(Interval.of(10, 17)),
+	WEB(Interval.of(10, 17)),
+	THU(Interval.of(10, 18)),
+	FRI(Interval.of(10, 18));
+	
+	final Interval workHours;
+
+	private Day(Interval workHours) {
+		this.workHours = workHours;
+	}
+}
+
+class Interval {
+	
+	static Interval of(int from, int to) {
+		return new Interval(from, to);
+	}
+	
+	final int from;
+	
+	final int to;
+
+	public Interval(int from, int to) {
+		this.from = from;
+		this.to = to;
+	}
+	
+	boolean contains(int hour) {
+		return from <= hour && hour <= to;
+	}
+	
+	int length() {
+		return to - from + 1;
+	}
+	
+	IntStream stream() {
+		return IntStream.range(from, to+1);
+	}
+	
+	@Override
+	public String toString() {
+		return "[" + from + "-" + to + "]";
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if(other == this) return true;
+		if(other == null || !(other instanceof Interval)) return false;
+		Interval otherInterval = (Interval)other;
+		return otherInterval.from == from && otherInterval.to == to;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(from, to);
+	}
 }
