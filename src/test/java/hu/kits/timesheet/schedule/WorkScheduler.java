@@ -1,55 +1,49 @@
-package hu.bankmonitor.schedule;
+package hu.kits.timesheet.schedule;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import hu.kits.timesheet.domain.common.Interval;
+import hu.kits.timesheet.domain.common.Rand;
+import hu.kits.timesheet.util.Stat;
 
 public class WorkScheduler {
 
-	private static Random random = new Random();
+	private static Rand rand = new Rand();
 	
 	public static void main(String args[]) {
 		
-		/*
-		List<Integer> numbers = new ArrayList<>();
-		for(int i=0;i<100;i++) {
-			Interval interval = generateRandomSubInterval(new Interval(10, 17), 4);
-			numbers.add(interval.length());
-			System.out.println(generateRandomSubInterval(new Interval(10, 17), 4));
-		}
-		Collections.sort(numbers);
-		System.out.println(numbers);
-		*/
+		WeeklySchedule scheduleX = createWeeklySchedule();
+		System.out.println(scheduleX);
+		System.out.println(scoreSchedule(scheduleX));
 		
 		int n = 1_000_000_000;
 		double minScore = Double.MAX_VALUE;
-		WeeklySchedule bestWeeklySchedule = null;
-		Set<WeeklySchedule> schedules = new HashSet<>();
-		for(int i=0;i<n;i++) {
+		List<WeeklySchedule> bestSchedules = new ArrayList<>();
+		boolean changed = false;
+		for(int i=1;i<=n;i++) {
 			try {
-				WeeklySchedule schedule = createSchedule();
+				WeeklySchedule schedule = createRandomSchedule();
 				double score = scoreSchedule(schedule);
 				if(score < minScore) {
 					minScore = score;
-					bestWeeklySchedule = schedule;
-				}
-				//System.out.println(schedule);
-				/*
-				if(testSchedule(schedule)) {
-					schedules.add(schedule);
-					System.out.println(schedules.size());
-					//return;
-				} else {
-					if(i % 1_000_000 == 0) System.out.println(i * 100.0 / n + "%");
-				}
-				*/
-				if(i % 1_000_000 == 0) {
-					System.out.println(minScore);
-					System.out.println(bestWeeklySchedule);
+					bestSchedules = new ArrayList<>();
+					bestSchedules.add(schedule);
+					changed = true;
+				} else if(score == minScore) {
+					bestSchedules.add(schedule);
+					changed = true;
+				} 
+				if(i % 500_000 == 0) {
+					if(changed) {
+						System.out.println(bestSchedules.size() + " best schedules so far after " + i + " tries:\n" + bestSchedules);
+						System.out.println("Score: " + minScore);
+						changed = false;
+					} else {
+						System.out.println("No change. " + i + " tries");
+					}
 				}
 				
 			} catch(IllegalStateException ex) {
@@ -57,91 +51,51 @@ public class WorkScheduler {
 			}
 			
 		}
-		
-		//System.out.println("NO");
+		System.out.println("DONE");
 	}
 	
-	private static WeeklySchedule createSchedule() {
+	private static WeeklySchedule createRandomSchedule() {
 		
 		Worker worker1 = new Worker("1");
 		Worker worker2 = new Worker("2");
 		Worker worker3 = new Worker("3");
 		
-		Map<Day, DailySchedule> dailySchedules = new LinkedHashMap<>();
 		for(Day day : Day.values()) {
-			WorkerSchedule worker1Schedule = randomWorkerSchedule(worker1, day);
-			WorkerSchedule worker2Schedule = randomWorkerSchedule(worker2, day);
-			WorkerSchedule worker3Schedule = randomWorkerSchedule(worker3, day);
-			dailySchedules.put(day, new DailySchedule(Arrays.asList(worker1Schedule, worker2Schedule, worker3Schedule)));
+			randomWork(worker1, day);
+			randomWork(worker2, day);
+			randomWork(worker3, day);
 		}
 		
-		return new WeeklySchedule(dailySchedules);
+		return new WeeklySchedule(Arrays.asList(worker1, worker2, worker3));
 	}
 	
-	private static WorkerSchedule randomWorkerSchedule(Worker worker, Day day) {
+	private static void randomWork(Worker worker, Day day) {
 		
 		switch(day) {
 			case MON:
 			case TUE:
-			case WEB:
+			case WED:
 			case THU: {
-				Interval workHours = generateRandomSubInterval(day.workHours, 4);
-				worker.work(workHours);
-				return new WorkerSchedule(worker, workHours);
+				Interval workHours = rand.generateRandomSubInterval(day.workHours, 4);
+				worker.work(day, workHours);
+				break;
 			} 
 			case FRI: {
-				int hoursLeftToWork = Math.min(Worker.WEEKLY_HOURS - worker.hoursWorked, day.workHours.length());
+				int hoursLeftToWork = Math.min(Worker.WEEKLY_HOURS - worker.hoursWorked(), day.workHours.length());
 				//if(hoursLeftToWork > day.workHours.length()) {
 				//	throw new IllegalStateException();
 				//}
-				Interval workHours = generateRandomSubIntervalWithLength(day.workHours, hoursLeftToWork);
-				worker.work(workHours);
-				return new WorkerSchedule(worker, workHours);
+				Interval workHours = rand.generateRandomSubIntervalWithLength(day.workHours, hoursLeftToWork);
+				worker.work(day, workHours);
+				break;
 			}
 			default: throw new IllegalArgumentException();
 		}
 	}
-	
-	private static Interval generateRandomSubInterval(Interval interval, int minLength) {
 		
-		int length = generateRandomHour(minLength, interval.length());
-		int from = generateRandomHour(interval.from, interval.to - length + 1);
-		
-		//int from = generateRandomHour(interval.from, interval.to - minLength);
-		//int to = generateRandomHour(from + 4 - 1, interval.to);
-		return new Interval(from, from + length - 1);
-	}
-	
-	private static Interval generateRandomSubIntervalWithLength(Interval interval, int length) {
-		
-		int from = generateRandomHour(interval.from, interval.to - length + 1);
-		return new Interval(from, from + length - 1);
-	}
-	
-	private static int generateRandomHour(int min, int max) {
-		if(min > max) throw new IllegalArgumentException(min + " > " + max);
-		if(min == max) return min;
-		return random.nextInt(max - min + 1) + min;
-	}
-	
-	private static boolean testSchedule(WeeklySchedule schedule) {
-		
-		if(Arrays.asList("1", "2", "3").stream().anyMatch(worker -> schedule.hoursWorked(worker) != 40)) {
-			return false;
-		}
-		
-		if(Stream.of(Day.values())
-				.anyMatch(day -> day.workHours.stream()
-						.anyMatch(hour -> schedule.dailySchedule(day).numberOfWorkersAt(hour) < 2))){
-			return false;
-		}
-		
-		return true;
-	}
-	
 	private static double scoreSchedule(WeeklySchedule schedule) {
 		double penalty = 0.0;
-		penalty += Math.pow(Arrays.asList("1", "2", "3").stream().mapToDouble(worker -> 2 * Math.abs(schedule.hoursWorked(worker) - Worker.WEEKLY_HOURS)).sum(), 3);
+		penalty += Math.pow(schedule.workers().stream().mapToDouble(worker -> 2 * Math.abs(worker.hoursWorked() - Worker.WEEKLY_HOURS)).sum(), 3);
 		
 		for(Day day : Day.values()) {
 			DailySchedule dailySchedule = schedule.dailySchedule(day);
@@ -150,14 +104,57 @@ public class WorkScheduler {
 				if(coverage == 0) {
 					penalty += 100;
 				} else if(coverage == 1) {
-					penalty += 1;
+					penalty += 10;
 				} else if(coverage == 3) {
 					penalty += 1;
 				}
 			}
+			penalty += 3 * Stat.stdev(dailySchedule.workerWorkHours());
 		}
 		
+		for(int hour=4;hour<=9;hour++) {
+			final int h = hour;
+			List<Integer> frequencies = schedule.workers().stream().map(worker -> worker.workHourFrequency().count(h)).collect(Collectors.toList());
+			penalty += 5 * Stat.stdev(frequencies);
+		}
+		
+		List<Integer> startsAt10Counts = schedule.workers().stream().map(Worker::startsAt10Counter).collect(Collectors.toList());
+		penalty += 5 * Stat.stdev(startsAt10Counts);
+		
+		List<Integer> leavesAtLateCounts = schedule.workers().stream().map(Worker::leavesAtLateCounter).collect(Collectors.toList());
+		penalty += 3 * Stat.stdev(leavesAtLateCounts);
+		
 		return penalty;
+	}
+	
+	private static WeeklySchedule createWeeklySchedule() {
+		
+		Worker worker1 = new Worker("1");
+		Worker worker2 = new Worker("2");
+		Worker worker3 = new Worker("3");
+		
+		worker1.work(Day.MON, Interval.of(10, 16));
+		worker2.work(Day.MON, Interval.of(10, 17));
+		worker3.work(Day.MON, Interval.of(10, 17));
+		
+		worker1.work(Day.TUE, Interval.of(10, 17));
+		worker2.work(Day.TUE, Interval.of(10, 16));
+		worker3.work(Day.TUE, Interval.of(10, 17));
+		
+		worker1.work(Day.WED, Interval.of(10, 17));
+		worker2.work(Day.WED, Interval.of(10, 17));
+		worker3.work(Day.WED, Interval.of(10, 16));
+		
+		worker1.work(Day.THU, Interval.of(10, 18));
+		worker2.work(Day.THU, Interval.of(10, 18));
+		worker3.work(Day.THU, Interval.of(10, 17));
+		
+		worker1.work(Day.FRI, Interval.of(10, 17));
+		worker2.work(Day.FRI, Interval.of(10, 17));
+		worker3.work(Day.FRI, Interval.of(10, 18));
+		
+		
+		return new WeeklySchedule(Arrays.asList(worker1, worker2, worker3));
 	}
 	
 }

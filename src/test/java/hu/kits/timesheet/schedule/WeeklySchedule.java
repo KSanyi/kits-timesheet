@@ -1,78 +1,86 @@
-package hu.bankmonitor.schedule;
+package hu.kits.timesheet.schedule;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+
+import hu.kits.timesheet.domain.common.Interval;
+import hu.kits.timesheet.util.FrequencyMap;
 
 public class WeeklySchedule {
 
-	private final Map<Day, DailySchedule> dailySchedule;
+	private final List<Worker> workers;
 
-	public WeeklySchedule(Map<Day, DailySchedule> dailySchedule) {
-		this.dailySchedule = dailySchedule;
+	public WeeklySchedule(List<Worker> workers) {
+		this.workers = workers;
 	}
 
 	public DailySchedule dailySchedule(Day day) {
-		return dailySchedule.get(day);
+		return new DailySchedule(day, workers);
 	}
 	
-	int hoursWorked(String workerName) {
-		return dailySchedule.values().stream().mapToInt(day -> day.hoursWorked(workerName)).sum();
+	List<Worker> workers() {
+		return workers;
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("");
 		
-		for(Day day : dailySchedule.keySet()) {
+		for(Day day : Day.values()) {
+			DailySchedule dailySchedule = dailySchedule(day);
 			sb.append(day).append("\n");
-			sb.append(dailySchedule.get(day)).append("\n");
+			sb.append(dailySchedule).append("\n");
 		}
-		sb.append(Arrays.asList("1", "2", "3").stream().map(worker -> worker + ": " + hoursWorked(worker)).collect(Collectors.joining(", ")));
-		return sb.append("\n").toString();
+		sb.append(workers().stream().map(worker -> worker + " worked " + worker.hoursWorked() + " hours").collect(Collectors.joining("\n"))).append("\n");
+		sb.append(workers().stream().map(worker -> worker + " workhour frequency: " + worker.workHourFrequency()).collect(Collectors.joining("\n"))).append("\n");
+		sb.append(workers().stream().map(worker -> worker + " start at 10AM " + worker.startsAt10Counter() + " times").collect(Collectors.joining("\n"))).append("\n");
+		return sb.toString();
 	}
 	
 	@Override
 	public boolean equals(Object other) {
 		if(other == this) return true;
 		if(other == null || !(other instanceof WeeklySchedule)) return false;
-		return ((WeeklySchedule)other).dailySchedule.equals(dailySchedule);
+		return ((WeeklySchedule)other).workers.equals(workers);
 	}
 	
 	@Override
 	public int hashCode() {
-		return dailySchedule.hashCode();
+		return workers.hashCode();
 	}
 	
 }
 
 class DailySchedule {
 	
-	List<WorkerSchedule> schedules;
-
-	public DailySchedule(List<WorkerSchedule> schedules) {
-		this.schedules = schedules;
-	}
+	public final Day day;
 	
-	int hoursWorked(String workerName) {
-		return schedules.stream().filter(schedule -> schedule.worker.name.equals(workerName)).mapToInt(WorkerSchedule::length).sum();
+	public final List<Worker> workers;
+
+	public DailySchedule(Day day, List<Worker> workers) {
+		this.day = day;
+		this.workers = workers;
 	}
 	
 	int numberOfWorkersAt(int hour) {
-		return (int)schedules.stream().filter(schedule -> schedule.workAt(hour)).count();
+		return (int)workers.stream().filter(schedule -> schedule.workAt(day, hour)).count();
+	}
+	
+	List<Integer> workerWorkHours() {
+		return workers.stream().map(worker -> worker.hoursWorked(day)).collect(Collectors.toList());
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("   10 11 12 13 14 15 16 17 18\n");
-		for(WorkerSchedule schedule : schedules) {
-			sb.append(schedule.worker.name + ":  ");
+		for(Worker worker : workers) {
+			sb.append(worker.name + ":  ");
 			int counter = 0;
 			for(int hour=10;hour<=18;hour++) {
-				if(schedule.workAt(hour)) {
+				if(worker.workAt(day, hour)) {
 					counter++;
 					sb.append("X  ");
 				} else {
@@ -88,46 +96,13 @@ class DailySchedule {
 	public boolean equals(Object other) {
 		if(other == this) return true;
 		if(other == null || !(other instanceof DailySchedule)) return false;
-		return ((DailySchedule)other).schedules.equals(schedules);
+		DailySchedule otherSchedule = (DailySchedule)other;
+		return otherSchedule.day == day && otherSchedule.workers.equals(workers);
 	}
 	
 	@Override
 	public int hashCode() {
-		return schedules.hashCode();
-	}
-	
-}
-
-class WorkerSchedule {
-	
-	final Worker worker;
-	
-	final Interval workHours;
-	
-	int length() {
-		return workHours.length();
-	}
-
-	public WorkerSchedule(Worker worker, Interval workHours) {
-		this.worker = worker;
-		this.workHours = workHours;
-	}
-
-	public boolean workAt(int hour) {
-		return workHours.contains(hour);
-	}
-	
-	@Override
-	public boolean equals(Object other) {
-		if(other == this) return true;
-		if(other == null || !(other instanceof WorkerSchedule)) return false;
-		WorkerSchedule otherSchedule = (WorkerSchedule)other;
-		return otherSchedule.worker.equals(worker) && otherSchedule.workHours.equals(workHours);
-	}
-	
-	@Override
-	public int hashCode() {
-		return Objects.hash(worker, workHours);
+		return Objects.hash(day, workers);
 	}
 	
 }
@@ -138,17 +113,43 @@ class Worker {
 	
 	final String name;
 	
-	int hoursWorked = 0;
+	private Map<Day, Interval> schedule = new HashMap<>();
 	
 	public Worker(String name) {
 		this.name = name;
 	}
 
-	void work(Interval workHours) {
-		hoursWorked += workHours.length();
-		if(hoursWorked > WEEKLY_HOURS) {
-			throw new IllegalStateException("Too many work hours");
-		}
+	void work(Day day, Interval workHours) {
+		schedule.put(day, workHours);
+		//if(workHours.length() > WEEKLY_HOURS) {
+		//	throw new IllegalStateException("Too many work hours");
+		//}
+	}
+	
+	public boolean workAt(Day day, int hour) {
+		return schedule.get(day).contains(hour);
+	}
+	
+	public int hoursWorked() {
+		return schedule.values().stream().mapToInt(Interval::length).sum();
+	}
+	
+	public int hoursWorked(Day day) {
+		return schedule.get(day).length();
+	}
+	
+	public FrequencyMap<Integer> workHourFrequency() {
+		FrequencyMap<Integer> frequencyMap = new FrequencyMap<>();
+		schedule.values().stream().forEach(interval -> frequencyMap.put(interval.length()));
+		return frequencyMap;
+	}
+	
+	public int startsAt10Counter() {
+		return (int)schedule.values().stream().filter(interval -> interval.from == 10).count();
+	}
+	
+	public int leavesAtLateCounter() {
+		return (int)schedule.values().stream().filter(interval -> interval.to == 18).count();
 	}
 	
 	@Override
@@ -163,12 +164,17 @@ class Worker {
 		return name.hashCode();
 	}
 	
+	@Override
+	public String toString() {
+		return "Worker " + name;
+	}
+
 }
 
 enum Day {
 	MON(Interval.of(10, 17)),
 	TUE(Interval.of(10, 17)),
-	WEB(Interval.of(10, 17)),
+	WED(Interval.of(10, 17)),
 	THU(Interval.of(10, 18)),
 	FRI(Interval.of(10, 18));
 	
@@ -179,48 +185,3 @@ enum Day {
 	}
 }
 
-class Interval {
-	
-	static Interval of(int from, int to) {
-		return new Interval(from, to);
-	}
-	
-	final int from;
-	
-	final int to;
-
-	public Interval(int from, int to) {
-		this.from = from;
-		this.to = to;
-	}
-	
-	boolean contains(int hour) {
-		return from <= hour && hour <= to;
-	}
-	
-	int length() {
-		return to - from + 1;
-	}
-	
-	IntStream stream() {
-		return IntStream.range(from, to+1);
-	}
-	
-	@Override
-	public String toString() {
-		return "[" + from + "-" + to + "]";
-	}
-	
-	@Override
-	public boolean equals(Object other) {
-		if(other == this) return true;
-		if(other == null || !(other instanceof Interval)) return false;
-		Interval otherInterval = (Interval)other;
-		return otherInterval.from == from && otherInterval.to == to;
-	}
-	
-	@Override
-	public int hashCode() {
-		return Objects.hash(from, to);
-	}
-}
