@@ -11,28 +11,28 @@ public class DailyRoster {
 
 	public final LocalDate date;
 	
-	private final Map<Employee, Interval> employeeWorkIntervals;
+	private final Map<Employee, Interval> employeeWorkingHours;
 
-	public DailyRoster(LocalDate date, Map<Employee, Interval> employeeWorkIntervals) {
+	public DailyRoster(LocalDate date, Map<Employee, Interval> employeeWorkingHours) {
 		this.date = date;
-		this.employeeWorkIntervals = Collections.unmodifiableMap(new TreeMap<>(employeeWorkIntervals));
+		this.employeeWorkingHours = Collections.unmodifiableMap(new TreeMap<>(employeeWorkingHours));
 	}
 	
 	public int coverage(int hour) {
-		return (int)employeeWorkIntervals.values().stream()
+		return (int)employeeWorkingHours.values().stream()
 				.filter(interval -> interval.contains(hour))
 				.count();
 	}
 	
 	private boolean workAt(Employee employee, int hour) {
-		return employeeWorkIntervals.getOrDefault(employee, Interval.empty).contains(hour);
+		return employeeWorkingHours.getOrDefault(employee, Interval.empty).contains(hour);
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(date + " - " + date.getDayOfWeek()).append("\n");
 		sb.append("   10 11 12 13 14 15 16 17 18\n");
-		for(Employee employee : employeeWorkIntervals.keySet()) {
+		for(Employee employee : employeeWorkingHours.keySet()) {
 			sb.append(employee + ":  ");
 			int counter = 0;
 			for(int hour=10;hour<=18;hour++) {

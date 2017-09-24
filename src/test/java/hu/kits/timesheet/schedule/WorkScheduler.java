@@ -30,7 +30,7 @@ public class WorkScheduler {
 				if(score < minScore) {
 					minScore = score;
 					bestSchedules = new ArrayList<>();
-					bestSchedules.add(schedule);
+					bestSchedules.add(schedule); 
 					changed = true;
 				} else if(score == minScore) {
 					bestSchedules.add(schedule);

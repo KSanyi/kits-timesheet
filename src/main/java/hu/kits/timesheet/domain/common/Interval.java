@@ -14,7 +14,7 @@ public class Interval {
 	public final int to;
 
 	public Interval(int from, int to) {
-		if(from >= to || (from == 0 && to == -1)) {
+		if(from <= to || (from == 0 && to == -1)) {
 			this.from = from;
 			this.to = to;
 		} else {
