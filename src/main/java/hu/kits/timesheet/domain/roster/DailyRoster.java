@@ -3,7 +3,7 @@ package hu.kits.timesheet.domain.roster;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
 
 import hu.kits.timesheet.domain.common.Interval;
 
@@ -15,7 +15,7 @@ public class DailyRoster {
 
 	public DailyRoster(LocalDate date, Map<Employee, Interval> employeeWorkingHours) {
 		this.date = date;
-		this.employeeWorkingHours = Collections.unmodifiableMap(new TreeMap<>(employeeWorkingHours));
+		this.employeeWorkingHours = Collections.unmodifiableMap(employeeWorkingHours);
 	}
 	
 	public int coverage(int hour) {
@@ -24,8 +24,12 @@ public class DailyRoster {
 				.count();
 	}
 	
-	private boolean workAt(Employee employee, int hour) {
+	public boolean workAt(Employee employee, int hour) {
 		return employeeWorkingHours.getOrDefault(employee, Interval.empty).contains(hour);
+	}
+	
+	public Set<Employee> employees() {
+		return employeeWorkingHours.keySet();
 	}
 	
 	@Override
@@ -46,6 +50,10 @@ public class DailyRoster {
 			sb.append(counter + "\n");
 		}
 		return sb.toString();
+	}
+	
+	public static final DailyRoster cretaeEmpty(LocalDate date){
+		return new DailyRoster(date, Collections.emptyMap());
 	}
 	
 }

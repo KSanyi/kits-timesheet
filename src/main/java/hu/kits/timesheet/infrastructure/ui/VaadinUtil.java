@@ -10,6 +10,10 @@ public class VaadinUtil {
 
     public final static String GRID_SMALL = "gridSmall";
     
+    public static TimesheetUI getUi() {
+		return (TimesheetUI)UI.getCurrent();
+	}
+    
     @SuppressWarnings("serial")
     public static ShortcutListener createErrorSubmissionShortcutListener() {
         return new ShortcutListener("Alt+E", ShortcutAction.KeyCode.E, new int[] { ShortcutAction.ModifierKey.CTRL }) {

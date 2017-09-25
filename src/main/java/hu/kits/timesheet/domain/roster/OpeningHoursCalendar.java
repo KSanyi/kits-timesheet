@@ -22,6 +22,10 @@ public class OpeningHoursCalendar {
 		return map.getOrDefault(date, Interval.empty);
 	}
 	
+	public DateInterval interval() {
+		return DateInterval.of(map.firstKey(), map.lastKey());
+	}
+	
 	@Override
 	public String toString() {
 		return map.keySet().stream()
@@ -29,11 +33,7 @@ public class OpeningHoursCalendar {
 				.collect(Collectors.joining("\n"));
 	}
 	
-}
-
-class OpeningHoursCalendarFactory {
-	
-	static OpeningHoursCalendar create(DateInterval dateInterval, List<OpeningHoursRule> rules) {
+	public static OpeningHoursCalendar create(DateInterval dateInterval, List<OpeningHoursRule> rules) {
 		
 		SortedMap<LocalDate, Interval> map = new TreeMap<>();
 		for(LocalDate date=dateInterval.from;!date.isAfter(dateInterval.to);date=date.plusDays(1)) {

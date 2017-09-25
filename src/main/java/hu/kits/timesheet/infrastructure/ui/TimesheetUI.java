@@ -11,6 +11,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import hu.kits.timesheet.infrastructure.server.ApplicationService;
 import hu.kits.timesheet.infrastructure.server.TimesheetServlet;
+import hu.kits.timesheet.infrastructure.ui.roster.RosterScreen;
 import hu.kits.timesheet.usermanagement.UserInfo;
 
 @Theme("timesheet")
@@ -44,7 +45,7 @@ public class TimesheetUI extends UI {
 	private void buildUI(UserInfo userInfo) {
 	    logger.info(userInfo.loginName + " logged in");
 	    
-	    VerticalLayout pageLayout = new VerticalLayout(new Header(userInfo));
+	    VerticalLayout pageLayout = new VerticalLayout(new Header(userInfo), new Menu());
 	    pageLayout.setMargin(false);
 	    pageLayout.setSpacing(false);
 	    pageLayout.setSizeUndefined();
@@ -54,6 +55,13 @@ public class TimesheetUI extends UI {
 	
 	public static TimesheetUI getCurrent() {
 		return (TimesheetUI)UI.getCurrent();
+	}
+
+	public void showRosterScreen() {
+		addWindow(new RosterScreen(applicationService.rosterRepository.loadRoster()));
+	}
+
+	public void showOpeningHoursScreen() {
 	}
 	
 }

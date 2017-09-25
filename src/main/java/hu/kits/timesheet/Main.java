@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import hu.kits.timesheet.infrastructure.authenticator.UserServiceAuthenticator;
+import hu.kits.timesheet.infrastructure.repository.FakeRosterRepository;
 import hu.kits.timesheet.infrastructure.server.ApplicationService;
 import hu.kits.timesheet.infrastructure.server.TimesheetServer;
 import hu.kits.timesheet.util.Clock;
@@ -21,7 +22,7 @@ public class Main {
         
         String userServiceUrl = getUserServiceUrl();
 
-        ApplicationService applicationService = new ApplicationService(new UserServiceAuthenticator(userServiceUrl), null);
+        ApplicationService applicationService = new ApplicationService(new UserServiceAuthenticator(userServiceUrl), null, new FakeRosterRepository());
 
         Clock.setStaticDate(LocalDate.of(2017, 4, 1));
         
