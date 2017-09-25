@@ -1,6 +1,8 @@
 package hu.kits.timesheet.domain.roster;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -35,17 +37,29 @@ public class OpeningHoursCalendar {
 	
 	public static OpeningHoursCalendar create(DateInterval dateInterval, List<OpeningHoursRule> rules) {
 		
+		List<OpeningHoursRule> reversedRules = new ArrayList<>(rules);
+		Collections.reverse(reversedRules);
+		
 		SortedMap<LocalDate, Interval> map = new TreeMap<>();
 		for(LocalDate date=dateInterval.from;!date.isAfter(dateInterval.to);date=date.plusDays(1)) {
-			map.put(date, Interval.of(10, 18));
+			final LocalDate theDate = date;
+			map.put(date, reversedRules.stream().filter(rule -> rule.condition.test(theDate)).findFirst().map(rule -> rule.interval).orElse(Interval.empty));
 		}
 		
 		return new OpeningHoursCalendar(map);
 	}
 	
+	public static class OpeningHoursRule {
+		
+		public final Predicate<LocalDate> condition;
+		
+		public final Interval interval;
+
+		public OpeningHoursRule(Predicate<LocalDate> condition, Interval interval) {
+			this.condition = condition;
+			this.interval = interval;
+		}
+	}
+	
 }
 
-interface OpeningHoursRule {
-	
-	Interval apply(Predicate<LocalDate> date);
-}

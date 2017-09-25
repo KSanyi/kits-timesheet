@@ -50,7 +50,7 @@ public class RosterScreen extends Window {
 		
 		int index = 0;
 		for(LocalDate date=week.from;!date.isAfter(week.to);date = date.plusDays(1)) {
-			DailyRosterTable dailyRosterTable = new DailyRosterTable(roster.openingHoursAt(date), roster.dailyRosterAt(date));
+			DailyRosterTable dailyRosterTable = new DailyRosterTable(roster.dailyRosterAt(date));
 			int column = index / 5;
 			int row = index % 5;
 			rostersLayout.addComponent(dailyRosterTable, column, row);

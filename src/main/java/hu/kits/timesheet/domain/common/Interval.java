@@ -36,6 +36,7 @@ public class Interval {
 	
 	@Override
 	public String toString() {
+		if(this == empty) return "[]";
 		return "[" + from + "-" + to + "]";
 	}
 	
