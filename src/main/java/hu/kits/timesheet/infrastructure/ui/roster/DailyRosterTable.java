@@ -1,11 +1,13 @@
 package hu.kits.timesheet.infrastructure.ui.roster;
 
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.components.grid.FooterRow;
 
 import hu.kits.timesheet.domain.common.Interval;
 import hu.kits.timesheet.domain.roster.DailyRoster;
@@ -21,24 +23,32 @@ public class DailyRosterTable extends Grid<DailyRosterRow> {
 	
 	public DailyRosterTable(Interval openingHours, DailyRoster dailyRoster) {
 		
-		setCaption(dailyRoster.date + " - " + dailyRoster.date.getDayOfWeek());
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MMMM d EEEE");
+		
+		setCaption(formatter.format(dailyRoster.date));
 		
 		this.openingHours = openingHours;
 		this.dailyRoster = dailyRoster;
 		
 		addColumn(r -> r.employeeName).setCaption("Eladó");
 		openingHours.stream().forEach(hour -> {
-			addColumn(r -> r.workMap.getOrDefault(hour, false) ? "X" : "")
+			addColumn(r -> "")
 			.setCaption(hour + " - " + (hour+1))
-			.setStyleGenerator(item -> "v-align-center");
+			.setId(String.valueOf(hour))
+			.setStyleGenerator(r -> "v-align-center")
+			.setStyleGenerator(r -> r.workMap.getOrDefault(hour, false) ? "BUSY" : "");
 		});
+		addColumn(r -> r.sum() + " óra").setCaption("");
+		
+		FooterRow footerRow = appendFooterRow();
+		openingHours.stream().forEach(hour -> footerRow.getCell(String.valueOf(hour)).setText(dailyRoster.coverage(hour) + ""));
 		
 		List<DailyRosterRow> rows = dailyRoster.employees().stream().map(this::createDailyRosterRow).collect(Collectors.toList());
 		
 		setItems(rows);
 		
 		setHeightByRows(Math.max(3, rows.size()));
-		setWidth("700px");
+		setWidth("850px");
         addStyleName(VaadinUtil.GRID_SMALL);
 	}
 	
@@ -61,6 +71,10 @@ class DailyRosterRow {
 	public DailyRosterRow(String employeeName, Map<Integer, Boolean> workMap) {
 		this.employeeName = employeeName;
 		this.workMap = workMap;
+	}
+	
+	int sum() {
+		return (int)workMap.values().stream().filter(v -> v).count();
 	}
 	
 }

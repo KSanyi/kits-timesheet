@@ -53,4 +53,8 @@ public class Interval {
 	}
 
 	public static final Interval empty = new Interval(0,-1);
+
+	public int cap(int value) {
+		return Math.min(Math.max(from, value), to);
+	}
 }

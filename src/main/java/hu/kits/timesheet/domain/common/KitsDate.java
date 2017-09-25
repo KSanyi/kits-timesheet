@@ -9,13 +9,14 @@ public class KitsDate {
 	public static DateInterval week(int year, int n) {
 		
 		LocalDate firstOfJan = LocalDate.of(year, 1, 1);
+		LocalDate firstMonday = firstOfJan.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		return week(firstMonday.plusWeeks(n-1));
+	}
+	
+	public static DateInterval week(LocalDate date) {
+		LocalDate monday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		
-		LocalDate firstMonday = firstOfJan.with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
-		
-		LocalDate from = firstMonday.plusWeeks(n-1);
-		LocalDate to = from.plusDays(6);
-		
-		return DateInterval.of(from, to);
+		return DateInterval.of(monday, monday.plusDays(6)); 
 	}
 	
 }

@@ -57,7 +57,7 @@ public class Header extends HorizontalLayout {
 	}
 
     private Layout createLogoLayout() {
-		Label logo = new Label("KITS Timesheet");
+		Label logo = new Label("Timesheet");
 		logo.setStyleName("mainLogo");
 		logo.setSizeUndefined();
 		

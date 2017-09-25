@@ -40,7 +40,7 @@ $v-font-family: 'Lora', sans-serif, 'Source Sans Pro';
         font-size: 14px;
     }
     
-    .v-grid-cell.OK {
+    .v-grid-cell.BUSY {
     	background: springgreen;
 	}
 	
@@ -48,8 +48,4 @@ $v-font-family: 'Lora', sans-serif, 'Source Sans Pro';
     	background: orange;
 	}
 	
-	.v-grid-cell.KO {
-    	background: red;
-	}
-    
 }

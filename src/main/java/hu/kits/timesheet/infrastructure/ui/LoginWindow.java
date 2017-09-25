@@ -32,7 +32,7 @@ class LoginWindow extends Window {
         this.authenticator = authenticator;
         this.successFulLoginHandler = successFulLoginHandler;
         
-        setCaption("KITS Timesheet");
+        setCaption("Timesheet");
         setModal(true);
         setClosable(false);
         setResizable(false);

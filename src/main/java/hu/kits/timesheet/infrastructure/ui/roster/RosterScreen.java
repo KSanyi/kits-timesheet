@@ -11,13 +11,14 @@ import hu.kits.timesheet.domain.common.DateInterval;
 import hu.kits.timesheet.domain.common.KitsDate;
 import hu.kits.timesheet.domain.roster.Roster;
 import hu.kits.timesheet.infrastructure.ui.component.WeekSelector;
+import hu.kits.timesheet.util.Clock;
 
 @SuppressWarnings("serial")
 public class RosterScreen extends Window {
 
 	//private final DateIntervalSelector dateIntervalSelector;
 	
-	private final WeekSelector weekSelector = new WeekSelector(KitsDate.week(2017, 1));
+	private final WeekSelector weekSelector = new WeekSelector(KitsDate.week(Clock.date()));
 	
 	private final GridLayout rostersLayout = new GridLayout(2, 5);
 	
@@ -25,6 +26,7 @@ public class RosterScreen extends Window {
 	
 	public RosterScreen(Roster roster) {
 		
+		setCaption("Beosztás");
 		center();
 		this.roster = roster;
 		
@@ -34,10 +36,12 @@ public class RosterScreen extends Window {
 		rostersLayout.setSpacing(true);
 		
 		VerticalLayout layout = new VerticalLayout(weekSelector, rostersLayout);
+		layout.setExpandRatio(rostersLayout, 1);
 		layout.setComponentAlignment(weekSelector, Alignment.TOP_CENTER);
 		layout.setComponentAlignment(rostersLayout, Alignment.MIDDLE_CENTER);
 		setContent(layout);
 		refresh(weekSelector.getValue());
+		
 	}
 	
 	private void refresh(DateInterval week) {

@@ -22,25 +22,28 @@ public class FakeRosterRepository implements RosterRepository {
 
 	private OpeningHoursCalendar openingHoursCalendar;
 	
+	private Roster roster;
+	
 	public FakeRosterRepository() {
-		openingHoursCalendar = OpeningHoursCalendar.create(DateInterval.of(LocalDate.of(2017, 1, 1), LocalDate.of(2017, 1, 7)), Collections.emptyList());
+		openingHoursCalendar = OpeningHoursCalendar.create(DateInterval.of(LocalDate.of(2017, 1, 1), LocalDate.of(2017, 12, 31)), Collections.emptyList());
+		
+		SortedMap<LocalDate, DailyRoster> dailyRosters = new TreeMap<>();
+		
+		List<Employee> employees = Arrays.asList(new Employee("Gabi"), new Employee("Ági"), new Employee("Brigi"));
+		for(LocalDate date=openingHoursCalendar.interval().from;!date.isAfter(openingHoursCalendar.interval().to);date = date.plusDays(1)) {
+			dailyRosters.put(date, new DailyRoster(date, generate(date, employees)));
+		}
+		
+		roster = new Roster(openingHoursCalendar, dailyRosters);
 	}
 	
 	@Override
 	public Roster loadRoster() {
 		
-		List<Employee> employees = Arrays.asList(new Employee("Gabi"), new Employee("Ági"), new Employee("Brigi"));
-		
-		SortedMap<LocalDate, DailyRoster> dailyRosters = new TreeMap<>();
-		
-		for(LocalDate date=openingHoursCalendar.interval().from;!date.isAfter(openingHoursCalendar.interval().to);date = date.plusDays(1)) {
-			dailyRosters.put(date, new DailyRoster(date, generate(date, employees)));
-		}
-		
 		//openingHoursCalendar.interval().stream()
 		//		.forEach(date -> dailyRosters.put(date, new DailyRoster(date, generate(date, employees))));
 		
-		return new Roster(openingHoursCalendar, dailyRosters);
+		return roster;
 	}
 	
 	private Map<Employee, Interval> generate(LocalDate date, List<Employee> employees) {

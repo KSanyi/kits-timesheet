@@ -37,7 +37,7 @@ public class OpeningHoursCalendar {
 		
 		SortedMap<LocalDate, Interval> map = new TreeMap<>();
 		for(LocalDate date=dateInterval.from;!date.isAfter(dateInterval.to);date=date.plusDays(1)) {
-			map.put(date, Interval.of(10, 17));
+			map.put(date, Interval.of(10, 18));
 		}
 		
 		return new OpeningHoursCalendar(map);

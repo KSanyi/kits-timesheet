@@ -24,7 +24,7 @@ public class Main {
 
         ApplicationService applicationService = new ApplicationService(new UserServiceAuthenticator(userServiceUrl), null, new FakeRosterRepository());
 
-        Clock.setStaticDate(LocalDate.of(2017, 4, 1));
+        Clock.setStaticDate(LocalDate.now());
         
         new TimesheetServer(port, applicationService).startServer();
     }
