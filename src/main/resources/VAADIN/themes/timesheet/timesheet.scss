@@ -44,6 +44,18 @@ $v-font-family: 'Lora', sans-serif, 'Source Sans Pro';
     	background: springgreen;
 	}
 	
+	.v-grid-cell.calendarFade {
+    	background: #909090;
+    	font-size: 9px;
+    	vertical-align: text-top;
+	}
+	
+	.v-grid-cell.calendarNormal {
+    	background: #E0E0E0;
+    	font-size: 9px;
+    	vertical-align: text-top;
+	}
+	
 	.v-grid-cell.WARNING {
     	background: orange;
 	}

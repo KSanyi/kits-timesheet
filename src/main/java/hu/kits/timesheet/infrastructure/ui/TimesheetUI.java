@@ -62,6 +62,7 @@ public class TimesheetUI extends UI {
 	}
 
 	public void showOpeningHoursScreen() {
+		//addWindow(new OpeningHoursScreen(applicationService.rosterRepository.loadRoster().openingHoursCalendar));
 	}
 	
 }
