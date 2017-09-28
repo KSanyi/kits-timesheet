@@ -36,7 +36,7 @@ public class CalendarMonthView extends VerticalLayout {
 	private void createLayout() {
 		setMargin(false);
 		
-		grid.setCaption(LocalDate.of(year, month, 1).format(DateTimeFormatter.ofPattern("yyyy MMMM", new Locale("HU"))));
+		grid.setCaption(LocalDate.of(year, month, 1).format(DateTimeFormatter.ofPattern("MMMM", new Locale("HU"))));
 		for(DayOfWeek day : DayOfWeek.values()) {
 			grid.addColumn(week -> week.getDay(day.ordinal()).getDayOfMonth())
 				.setCaption(day.name().substring(0, 1))

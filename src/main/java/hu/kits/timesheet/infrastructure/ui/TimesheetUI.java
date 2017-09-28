@@ -6,11 +6,13 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import hu.kits.timesheet.infrastructure.server.ApplicationService;
 import hu.kits.timesheet.infrastructure.server.TimesheetServlet;
+import hu.kits.timesheet.infrastructure.ui.roster.OpeningHoursScreen;
 import hu.kits.timesheet.infrastructure.ui.roster.RosterScreen;
 import hu.kits.timesheet.usermanagement.UserInfo;
 
@@ -24,6 +26,8 @@ public class TimesheetUI extends UI {
 	private ApplicationService applicationService = ((TimesheetServlet)VaadinServlet.getCurrent()).applicationService;
 	
 	private UserInfo userInfo;
+	
+	private HorizontalLayout mainScreen = new HorizontalLayout();
 
 	@Override
 	protected void init(VaadinRequest request) {
@@ -45,7 +49,9 @@ public class TimesheetUI extends UI {
 	private void buildUI(UserInfo userInfo) {
 	    logger.info(userInfo.loginName + " logged in");
 	    
-	    VerticalLayout pageLayout = new VerticalLayout(new Header(userInfo), new Menu());
+	    mainScreen.setSpacing(false);
+	    
+	    VerticalLayout pageLayout = new VerticalLayout(new Header(userInfo), new Menu(), mainScreen);
 	    pageLayout.setMargin(false);
 	    pageLayout.setSpacing(false);
 	    pageLayout.setSizeUndefined();
@@ -62,7 +68,8 @@ public class TimesheetUI extends UI {
 	}
 
 	public void showOpeningHoursScreen() {
-		//addWindow(new OpeningHoursScreen(applicationService.rosterRepository.loadRoster().openingHoursCalendar));
+		mainScreen.removeAllComponents();
+		mainScreen.addComponent(new OpeningHoursScreen(applicationService.rosterRepository.loadRoster().openingHoursCalendar));
 	}
 	
 }
