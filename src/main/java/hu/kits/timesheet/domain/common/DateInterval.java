@@ -1,10 +1,12 @@
 package hu.kits.timesheet.domain.common;
 
 import java.time.LocalDate;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-public class DateInterval {
+public class DateInterval implements Iterable<LocalDate> {
 	
 	public static DateInterval of(LocalDate from, LocalDate to) {
 		if(!to.isBefore(from)) {
@@ -32,16 +34,12 @@ public class DateInterval {
 		return (int)(to.toEpochDay() - from.toEpochDay() + 1);
 	}
 	
-	public Stream<LocalDate> stream() {
-		return Stream.iterate(from, date -> date.plusDays(1)).filter(date -> !date.isAfter(to));
-	}
-	
 	@Override
 	public String toString() {
 		if(this == empty) {
 			return "[]";
 		} else {
-			return "[" + from + "-" + to + "]";
+			return "[" + from + " - " + to + "]";
 		}
 	}
 	
@@ -59,4 +57,33 @@ public class DateInterval {
 	}
 
 	public static final DateInterval empty = new DateInterval(LocalDate.of(1970,1,2), LocalDate.of(1970,1,1));
+
+	@Override
+	public Iterator<LocalDate> iterator() {
+		return new Iterator<LocalDate>(){
+
+			private LocalDate date = from;
+			
+			@Override
+			public boolean hasNext() {
+				return !date.isAfter(to);
+			}
+
+			@Override
+			public LocalDate next() {
+				LocalDate currentDate = date;
+				date = date.plusDays(1);
+				return currentDate;
+			}
+		};
+	}
+	
+	public Stream<LocalDate> stream() {
+		Iterable<LocalDate> iterable = () -> iterator();
+		return StreamSupport.stream(iterable.spliterator(), false);
+	}
+
+	public LocalDate getDay(int index) {
+		return from.plusDays(index);
+	}
 }

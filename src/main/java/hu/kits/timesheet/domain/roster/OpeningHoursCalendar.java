@@ -1,5 +1,6 @@
 package hu.kits.timesheet.domain.roster;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,8 +25,29 @@ public class OpeningHoursCalendar {
 		return map.getOrDefault(date, Interval.empty);
 	}
 	
+	public int sumOpeningHours(DateInterval interval) {
+		
+		return interval.stream().mapToInt(day -> openingHoursAt(day).length()).sum();
+	}
+	
 	public DateInterval interval() {
 		return DateInterval.of(map.firstKey(), map.lastKey());
+	}
+	
+	public List<DateInterval> weeks() {
+		
+		List<DateInterval> weeks = new ArrayList<>();
+		List<LocalDate> weekDays = new ArrayList<>();
+		for(LocalDate day : interval()) {
+			weekDays.add(day);
+			if(day.getDayOfWeek() == DayOfWeek.SUNDAY) {
+				weeks.add(DateInterval.of(weekDays.get(0), weekDays.get(weekDays.size()-1)));
+				weekDays.clear();
+			} 
+		}
+		
+		return weeks;
+		
 	}
 	
 	@Override
@@ -41,9 +63,8 @@ public class OpeningHoursCalendar {
 		Collections.reverse(reversedRules);
 		
 		SortedMap<LocalDate, Interval> map = new TreeMap<>();
-		for(LocalDate date=dateInterval.from;!date.isAfter(dateInterval.to);date=date.plusDays(1)) {
-			final LocalDate theDate = date;
-			map.put(date, reversedRules.stream().filter(rule -> rule.condition.test(theDate)).findFirst().map(rule -> rule.interval).orElse(Interval.empty));
+		for(LocalDate date : dateInterval) {
+			map.put(date, reversedRules.stream().filter(rule -> rule.condition.test(date)).findFirst().map(rule -> rule.interval).orElse(Interval.empty));
 		}
 		
 		return new OpeningHoursCalendar(map);

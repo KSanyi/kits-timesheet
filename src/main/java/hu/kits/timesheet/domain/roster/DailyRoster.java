@@ -37,7 +37,7 @@ public class DailyRoster {
 		StringBuilder sb = new StringBuilder(date + " - " + date.getDayOfWeek()).append("\n");
 		sb.append("   10 11 12 13 14 15 16 17 18\n");
 		for(Employee employee : employeeWorkingHours.keySet()) {
-			sb.append(employee + ":  ");
+			sb.append(employee.name.charAt(0) + ":  ");
 			int counter = 0;
 			for(int hour=10;hour<=18;hour++) {
 				if(workAt(employee, hour)) {

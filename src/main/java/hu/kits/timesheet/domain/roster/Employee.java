@@ -13,22 +13,22 @@ public class Employee {
 	
 	public final String name;
 	
-	private Map<LocalDate, Interval> works = new HashMap<>();
+	private Map<LocalDate, Interval> schedule = new HashMap<>();
 	
 	public Employee(String name) {
 		this.name = name;
 	}
 	
-	public void work(LocalDate date, Interval interval) {
-		works.put(date, interval);
+	public void schedule(LocalDate date, Interval interval) {
+		schedule.put(date, interval);
 	}
 	
-	public int hoursWorked(DateInterval dateInterval) {
-		return dateInterval.stream().mapToInt(date -> hoursWorked(date)).sum();
+	public int hoursScheduled(DateInterval dateInterval) {
+		return dateInterval.stream().mapToInt(date -> hoursScheduled(date)).sum();
 	}
 	
-	public int hoursWorked(LocalDate date) {
-		return works.getOrDefault(date, Interval.empty).length();
+	public int hoursScheduled(LocalDate date) {
+		return schedule.getOrDefault(date, Interval.empty).length();
 	}
 	
 	@Override

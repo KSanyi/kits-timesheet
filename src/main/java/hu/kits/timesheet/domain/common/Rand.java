@@ -16,6 +16,12 @@ public class Rand {
 	
 	public Interval generateRandomSubIntervalWithLength(Interval interval, int length) {
 		
+		if(length == 0) {
+			return Interval.empty;
+		}
+		
+		if(length > interval.length()) throw new IllegalArgumentException("Can not generate " + length + " long interval in " + interval);
+		
 		int from = generateRandomNumber(interval.from, interval.to - length + 1);
 		return new Interval(from, from + length - 1);
 	}

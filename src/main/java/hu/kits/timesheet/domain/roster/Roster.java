@@ -1,6 +1,7 @@
 package hu.kits.timesheet.domain.roster;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
 
@@ -9,7 +10,7 @@ import hu.kits.timesheet.domain.common.Interval;
 
 public class Roster {
 
-	private final OpeningHoursCalendar openingHoursCalendar;
+	public final OpeningHoursCalendar openingHoursCalendar;
 	
 	private final SortedMap<LocalDate, DailyRoster> map;
 
@@ -28,6 +29,10 @@ public class Roster {
 	
 	public DateInterval interval() {
 		return openingHoursCalendar.interval();
+	}
+	
+	public List<Employee> employees() {
+		return map.values().stream().flatMap(d -> d.employees().stream()).collect(Collectors.toList());
 	}
 	
 	@Override
