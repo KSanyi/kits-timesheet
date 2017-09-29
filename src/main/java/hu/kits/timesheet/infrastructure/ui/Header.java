@@ -34,9 +34,9 @@ public class Header extends HorizontalLayout {
 	public Header(UserInfo userInfo) {
 	    
 		this.userInfo = userInfo;
-		setSizeFull();
+		//setSizeFull();
 		setHeight("150px");
-		setWidth("1350px");
+		setWidth("1650px");
 		setStyleName("dark");
 
 		errorButton.addStyleName(ValoTheme.BUTTON_SMALL);

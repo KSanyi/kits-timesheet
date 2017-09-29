@@ -58,4 +58,8 @@ public class Interval {
 	public int cap(int value) {
 		return Math.min(Math.max(from, value), to);
 	}
+
+	public boolean isEmpty() {
+		return this == empty;
+	}
 }

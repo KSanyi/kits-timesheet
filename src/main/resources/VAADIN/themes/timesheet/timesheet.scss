@@ -56,6 +56,14 @@ $v-font-family: 'Lora', sans-serif, 'Source Sans Pro';
     	vertical-align: text-top;
 	}
 	
+	.v-grid-cell.calendarWeekNumber {
+    	background: #F0F0F0;
+    	font-size: 10px;
+    	align: center;
+	}
+	
+	calendarWeekNumber
+	
 	.v-grid-cell.WARNING {
     	background: orange;
 	}

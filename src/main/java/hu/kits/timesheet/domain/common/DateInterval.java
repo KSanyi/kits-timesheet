@@ -86,4 +86,5 @@ public class DateInterval implements Iterable<LocalDate> {
 	public LocalDate getDay(int index) {
 		return from.plusDays(index);
 	}
+	
 }
