@@ -23,7 +23,7 @@ public class FakeRosterRepository implements RosterRepository {
 	public FakeRosterRepository() {
 		openingHoursCalendar = createOpeningHoursCalendar();
 		
-		List<Employee> employees = Arrays.asList(new Employee("Gabi"), new Employee("Ági"), new Employee("Brigi"));
+		List<Employee> employees = Arrays.asList(new Employee("Gabi"), new Employee("Ági"), new Employee("Brigi"), new Employee("Xenia"));
 		roster = new RandomRosterGenerator().generateRoster(openingHoursCalendar, employees);
 	}
 	
@@ -39,31 +39,29 @@ public class FakeRosterRepository implements RosterRepository {
 	private OpeningHoursCalendar createOpeningHoursCalendar() {
 		
 		List<LocalDate> nationalHolidays = Arrays.asList(
-				LocalDate.of(2017,1,1),
-				LocalDate.of(2017,3,15),
-				LocalDate.of(2017,4,14),
-				LocalDate.of(2017,4,17), 
-				LocalDate.of(2017,5,1),
-				LocalDate.of(2017,6,5),
-				LocalDate.of(2017,8,20),
-				LocalDate.of(2017,10,23),
-				LocalDate.of(2017,11,1),
-				LocalDate.of(2017,12,24),
-				LocalDate.of(2017,12,25),
-				LocalDate.of(2017,12,26));
+				LocalDate.of(2018,1,1),
+				LocalDate.of(2018,3,15),
+				LocalDate.of(2018,4,14),
+				LocalDate.of(2018,4,17), 
+				LocalDate.of(2018,5,1),
+				LocalDate.of(2018,6,5),
+				LocalDate.of(2018,8,20),
+				LocalDate.of(2018,10,23),
+				LocalDate.of(2018,11,1),
+				LocalDate.of(2018,12,24),
+				LocalDate.of(2018,12,25),
+				LocalDate.of(2018,12,26));
 		
-		OpeningHoursRule tenToSixRule = new OpeningHoursRule(date -> true, Interval.of(10, 17));
-		OpeningHoursRule tenToSevenRule = new OpeningHoursRule(date -> date.getDayOfWeek() == DayOfWeek.THURSDAY || date.getDayOfWeek() == DayOfWeek.FRIDAY, Interval.of(10, 18));
+		OpeningHoursRule nineToSevenRule = new OpeningHoursRule(date -> true, Interval.of(9, 18));
 		OpeningHoursRule saturdayRule = new OpeningHoursRule(date -> date.getDayOfWeek() == DayOfWeek.SATURDAY, Interval.of(10, 14));
 		OpeningHoursRule sundayClosedRule = new OpeningHoursRule(date -> date.getDayOfWeek() == DayOfWeek.SUNDAY, Interval.empty);
-		OpeningHoursRule summerSaturdayClosedRule = new OpeningHoursRule(date -> date.getDayOfWeek() == DayOfWeek.SATURDAY && Arrays.asList(6, 7, 8).contains(date.getMonthValue()), Interval.empty);
-		OpeningHoursRule summerClosedRule =  new OpeningHoursRule(date -> DateInterval.of(LocalDate.of(2017,7,10), LocalDate.of(2017,7,15)).contains(date), Interval.empty);
+		//OpeningHoursRule summerSaturdayClosedRule = new OpeningHoursRule(date -> date.getDayOfWeek() == DayOfWeek.SATURDAY && Arrays.asList(6, 7, 8).contains(date.getMonthValue()), Interval.empty);
+		//OpeningHoursRule summerClosedRule =  new OpeningHoursRule(date -> DateInterval.of(LocalDate.of(2017,7,10), LocalDate.of(2017,7,15)).contains(date), Interval.empty);
 		OpeningHoursRule nationalHolidayRule =  new OpeningHoursRule(date -> nationalHolidays.contains(date), Interval.empty);
 		
+		List<OpeningHoursRule> openingHoursRules = Arrays.asList(nineToSevenRule, saturdayRule, sundayClosedRule, nationalHolidayRule);
 		
-		List<OpeningHoursRule> openingHoursRules = Arrays.asList(tenToSixRule, tenToSevenRule, saturdayRule, sundayClosedRule, summerSaturdayClosedRule, summerClosedRule, nationalHolidayRule);
-		
-		return OpeningHoursCalendar.create(DateInterval.of(LocalDate.of(2017, 1, 1), LocalDate.of(2017, 12, 31)), openingHoursRules);
+		return OpeningHoursCalendar.create(DateInterval.of(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 12, 31)), openingHoursRules);
 	}
 
 }

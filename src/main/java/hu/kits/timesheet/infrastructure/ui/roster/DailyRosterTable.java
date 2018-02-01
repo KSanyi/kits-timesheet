@@ -17,7 +17,7 @@ import hu.kits.timesheet.infrastructure.ui.VaadinUtil;
 @SuppressWarnings("serial")
 public class DailyRosterTable extends Grid<DailyRosterRow> {
 
-	private final Interval hours = Interval.of(10, 18);
+	private final Interval hours = Interval.of(9, 18);
 	
 	private final DailyRoster dailyRoster;
 	
@@ -32,11 +32,11 @@ public class DailyRosterTable extends Grid<DailyRosterRow> {
 		addColumn(r -> r.employeeName).setCaption("Eladó");
 		hours.stream().forEach(hour -> {
 			addColumn(r -> "")
-			.setCaption(hour + " - " + (hour+1))
+			.setCaption(hour + "-" + (hour+1))
 			.setId(String.valueOf(hour))
 			.setStyleGenerator(r -> "v-align-center")
 			.setStyleGenerator(r -> r.workMap.getOrDefault(hour, false) ? "BUSY" : "")
-			.setWidth(80);
+			.setWidth(70);
 		});
 		addColumn(r -> r.sum() + " óra").setCaption("");
 		
@@ -48,6 +48,7 @@ public class DailyRosterTable extends Grid<DailyRosterRow> {
 		setItems(rows);
 		
 		setHeightByRows(Math.max(3, rows.size()));
+		setRowHeight(25);
 		setWidth("860px");
         addStyleName(VaadinUtil.GRID_SMALL);
 	}

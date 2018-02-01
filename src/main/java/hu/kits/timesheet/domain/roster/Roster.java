@@ -20,7 +20,8 @@ public class Roster {
 	}
 	
 	public DailyRoster dailyRosterAt(LocalDate date) {
-		return map.getOrDefault(date, DailyRoster.cretaeEmpty(date));
+		DailyRoster xxx= map.getOrDefault(date, DailyRoster.cretaeEmpty(date));
+		return xxx;
 	}
 	
 	public Interval openingHoursAt(LocalDate date) {
