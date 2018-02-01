@@ -75,11 +75,11 @@ class DailySchedule {
 	
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder("   10 11 12 13 14 15 16 17 18\n");
+		StringBuilder sb = new StringBuilder("    9 10 11 12 13 14 15 16 17 18\n");
 		for(Worker worker : workers) {
 			sb.append(worker.name + ":  ");
 			int counter = 0;
-			for(int hour=10;hour<=18;hour++) {
+			for(int hour=9;hour<=18;hour++) {
 				if(worker.workAt(day, hour)) {
 					counter++;
 					sb.append("X  ");
@@ -176,7 +176,8 @@ enum Day {
 	TUE(Interval.of(9, 18)),
 	WED(Interval.of(9, 18)),
 	THU(Interval.of(9, 18)),
-	FRI(Interval.of(9, 18));
+	FRI(Interval.of(9, 18)),
+	SAT(Interval.of(10, 14));
 	
 	final Interval workHours;
 

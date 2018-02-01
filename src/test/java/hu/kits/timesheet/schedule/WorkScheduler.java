@@ -74,6 +74,7 @@ public class WorkScheduler {
 	private static void randomWork(Worker worker, Day day) {
 		
 		switch(day) {
+			case SAT:
 			case MON:
 			case TUE:
 			case WED:
@@ -81,7 +82,7 @@ public class WorkScheduler {
 				Interval workHours = rand.generateRandomSubInterval(day.workHours, 4);
 				worker.work(day, workHours);
 				break;
-			} 
+			}
 			case FRI: {
 				int hoursLeftToWork = Math.min(Worker.WEEKLY_HOURS - worker.hoursWorked(), day.workHours.length());
 				//if(hoursLeftToWork > day.workHours.length()) {
@@ -162,6 +163,11 @@ public class WorkScheduler {
 		worker2.work(Day.FRI, Interval.of(10, 17));
 		worker3.work(Day.FRI, Interval.of(10, 18));
 		worker4.work(Day.FRI, Interval.of(10, 17));
+		
+		worker1.work(Day.SAT, Interval.of(10, 14));
+		worker2.work(Day.SAT, Interval.of(10, 14));
+		worker3.work(Day.SAT, Interval.of(10, 14));
+		worker4.work(Day.SAT, Interval.of(10, 14));
 		
 		return new WeeklySchedule(Arrays.asList(worker1, worker2, worker3, worker4));
 	}
