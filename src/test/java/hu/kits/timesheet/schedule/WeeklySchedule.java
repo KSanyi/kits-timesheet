@@ -172,11 +172,11 @@ class Worker {
 }
 
 enum Day {
-	MON(Interval.of(10, 17)),
-	TUE(Interval.of(10, 17)),
-	WED(Interval.of(10, 17)),
-	THU(Interval.of(10, 18)),
-	FRI(Interval.of(10, 18));
+	MON(Interval.of(9, 18)),
+	TUE(Interval.of(9, 18)),
+	WED(Interval.of(9, 18)),
+	THU(Interval.of(9, 18)),
+	FRI(Interval.of(9, 18));
 	
 	final Interval workHours;
 

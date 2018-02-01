@@ -59,14 +59,16 @@ public class WorkScheduler {
 		Worker worker1 = new Worker("1");
 		Worker worker2 = new Worker("2");
 		Worker worker3 = new Worker("3");
+		Worker worker4 = new Worker("4");
 		
 		for(Day day : Day.values()) {
 			randomWork(worker1, day);
 			randomWork(worker2, day);
 			randomWork(worker3, day);
+			randomWork(worker4, day);
 		}
 		
-		return new WeeklySchedule(Arrays.asList(worker1, worker2, worker3));
+		return new WeeklySchedule(Arrays.asList(worker1, worker2, worker3, worker4));
 	}
 	
 	private static void randomWork(Worker worker, Day day) {
@@ -105,7 +107,9 @@ public class WorkScheduler {
 					penalty += 100;
 				} else if(coverage == 1) {
 					penalty += 10;
-				} else if(coverage == 3) {
+				} else if(coverage == 2) {
+					penalty += 3;
+				}else if(coverage == 4) {
 					penalty += 1;
 				}
 			}
@@ -132,29 +136,34 @@ public class WorkScheduler {
 		Worker worker1 = new Worker("1");
 		Worker worker2 = new Worker("2");
 		Worker worker3 = new Worker("3");
+		Worker worker4 = new Worker("4");
 		
 		worker1.work(Day.MON, Interval.of(10, 16));
 		worker2.work(Day.MON, Interval.of(10, 17));
 		worker3.work(Day.MON, Interval.of(10, 17));
+		worker4.work(Day.MON, Interval.of(10, 17));
 		
 		worker1.work(Day.TUE, Interval.of(10, 17));
 		worker2.work(Day.TUE, Interval.of(10, 16));
 		worker3.work(Day.TUE, Interval.of(10, 17));
+		worker4.work(Day.TUE, Interval.of(10, 17));
 		
 		worker1.work(Day.WED, Interval.of(10, 17));
 		worker2.work(Day.WED, Interval.of(10, 17));
 		worker3.work(Day.WED, Interval.of(10, 16));
+		worker4.work(Day.WED, Interval.of(10, 17));
 		
 		worker1.work(Day.THU, Interval.of(10, 18));
 		worker2.work(Day.THU, Interval.of(10, 18));
 		worker3.work(Day.THU, Interval.of(10, 17));
+		worker4.work(Day.THU, Interval.of(10, 17));
 		
 		worker1.work(Day.FRI, Interval.of(10, 17));
 		worker2.work(Day.FRI, Interval.of(10, 17));
 		worker3.work(Day.FRI, Interval.of(10, 18));
+		worker4.work(Day.FRI, Interval.of(10, 17));
 		
-		
-		return new WeeklySchedule(Arrays.asList(worker1, worker2, worker3));
+		return new WeeklySchedule(Arrays.asList(worker1, worker2, worker3, worker4));
 	}
 	
 }
