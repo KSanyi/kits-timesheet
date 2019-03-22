@@ -23,7 +23,7 @@ public class FakeRosterRepository implements RosterRepository {
 	public FakeRosterRepository() {
 		openingHoursCalendar = createOpeningHoursCalendar();
 		
-		List<Employee> employees = Arrays.asList(new Employee("Gabi"), new Employee("√Ågi"), new Employee("Brigi"), new Employee("Xenia"));
+		List<Employee> employees = Arrays.asList(new Employee("Gabi"), new Employee("¡gi"), new Employee("Brigi"), new Employee("Xenia"));
 		roster = new RandomRosterGenerator().generateRoster(openingHoursCalendar, employees);
 	}
 	

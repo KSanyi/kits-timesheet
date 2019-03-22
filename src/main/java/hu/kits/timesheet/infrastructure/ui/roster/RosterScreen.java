@@ -20,7 +20,7 @@ public class RosterScreen extends Window {
 
 	//private final DateIntervalSelector dateIntervalSelector;
 	
-	private final Button generateButton = new Button("√öj beoszt√°s gener√°l√°sa", click -> generate());
+	private final Button generateButton = new Button("…ves beosztÈs gener·l·sa", click -> generate());
 	
 	private final WeekSelector weekSelector = new WeekSelector(KitsDate.week(Clock.date()));
 	
@@ -30,7 +30,7 @@ public class RosterScreen extends Window {
 	
 	public RosterScreen(Roster roster) {
 		
-		setCaption("Beoszt√°s");
+		setCaption("Beoszt·s");
 		center();
 		this.roster = roster;
 		

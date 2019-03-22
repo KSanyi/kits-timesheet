@@ -3,11 +3,9 @@ package hu.kits.timesheet.schedule;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import hu.kits.timesheet.domain.common.Interval;
 import hu.kits.timesheet.domain.common.Rand;
-import hu.kits.timesheet.util.Stat;
 
 public class WorkScheduler {
 
@@ -107,27 +105,27 @@ public class WorkScheduler {
 				if(coverage == 0) {
 					penalty += 100;
 				} else if(coverage == 1) {
-					penalty += 10;
+					penalty += 30;
 				} else if(coverage == 2) {
-					penalty += 3;
+					penalty += 15;
 				}else if(coverage == 4) {
-					penalty += 1;
+					penalty += 3;
 				}
 			}
-			penalty += 3 * Stat.stdev(dailySchedule.workerWorkHours());
+			//penalty += 3 * Stat.stdev(dailySchedule.workerWorkHours());
 		}
 		
-		for(int hour=4;hour<=9;hour++) {
-			final int h = hour;
-			List<Integer> frequencies = schedule.workers().stream().map(worker -> worker.workHourFrequency().count(h)).collect(Collectors.toList());
-			penalty += 5 * Stat.stdev(frequencies);
-		}
+		//for(int hour=4;hour<=9;hour++) {
+		//	final int h = hour;
+		//	List<Integer> frequencies = schedule.workers().stream().map(worker -> worker.workHourFrequency().count(h)).collect(Collectors.toList());
+		//	penalty += 5 * Stat.stdev(frequencies);
+		//}
 		
-		List<Integer> startsAt10Counts = schedule.workers().stream().map(Worker::startsAt10Counter).collect(Collectors.toList());
-		penalty += 5 * Stat.stdev(startsAt10Counts);
+		//List<Integer> startsAt10Counts = schedule.workers().stream().map(Worker::startsAt10Counter).collect(Collectors.toList());
+		//penalty += 5 * Stat.stdev(startsAt10Counts);
 		
-		List<Integer> leavesAtLateCounts = schedule.workers().stream().map(Worker::leavesAtLateCounter).collect(Collectors.toList());
-		penalty += 3 * Stat.stdev(leavesAtLateCounts);
+		//List<Integer> leavesAtLateCounts = schedule.workers().stream().map(Worker::leavesAtLateCounter).collect(Collectors.toList());
+		//penalty += 3 * Stat.stdev(leavesAtLateCounts);
 		
 		return penalty;
 	}

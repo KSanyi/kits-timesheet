@@ -16,7 +16,7 @@ import hu.kits.timesheet.domain.common.DateInterval;
 @SuppressWarnings("serial")
 public class WeekSteper extends CustomField<DateInterval> {
 
-	private final TextField numberField = new TextField("HÃ©t");
+	private final TextField numberField = new TextField("Hét");
 	
 	private final Button pervButton = new Button("", click -> incrementOrDecrement(-1));
 	private final Button nextButton = new Button("", click -> incrementOrDecrement(+1));

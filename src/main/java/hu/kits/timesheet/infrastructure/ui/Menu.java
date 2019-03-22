@@ -15,9 +15,9 @@ public class Menu extends MenuBar {
 		setStyleName(ValoTheme.MENUBAR_SMALL);
 		setSizeFull();
 		
-		MenuItem openingHoursMenuItem = addItem("NyitvatartÃ¡s", null);
-		openingHoursMenuItem.addItem("Ã‰ves nyitvatartÃ¡s", new LoggerCommand(c -> VaadinUtil.getUi().showOpeningHoursScreen()));
-		openingHoursMenuItem.addItem("EladÃ³ beosztÃ¡s", new LoggerCommand(c -> VaadinUtil.getUi().showRosterScreen()));
+		MenuItem openingHoursMenuItem = addItem("Nyitvatartás", null);
+		openingHoursMenuItem.addItem("Éves nyitvatartás", new LoggerCommand(c -> VaadinUtil.getUi().showOpeningHoursScreen()));
+		openingHoursMenuItem.addItem("Eladó beosztás", new LoggerCommand(c -> VaadinUtil.getUi().showRosterScreen()));
 	}
 	
 	private static class LoggerCommand implements Command {

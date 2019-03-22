@@ -17,7 +17,7 @@ import hu.kits.timesheet.domain.common.DateInterval;
 @SuppressWarnings("serial")
 public class WeekSelector extends CustomField<DateInterval> implements HasValue.ValueChangeListener<LocalDate> {
 
-	private final DateField dateField = new DateField("DÃ¡tum");
+	private final DateField dateField = new DateField("Dátum");
 	private final WeekSteper weekNumberSteper;
 	
 	private Registration registration;

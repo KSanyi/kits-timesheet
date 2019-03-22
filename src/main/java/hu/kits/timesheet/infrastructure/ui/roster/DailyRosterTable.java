@@ -29,7 +29,7 @@ public class DailyRosterTable extends Grid<DailyRosterRow> {
 		
 		this.dailyRoster = dailyRoster;
 		
-		addColumn(r -> r.employeeName).setCaption("EladÃ³");
+		addColumn(r -> r.employeeName).setCaption("Eladó");
 		hours.stream().forEach(hour -> {
 			addColumn(r -> "")
 			.setCaption(hour + "-" + (hour+1))
@@ -38,7 +38,7 @@ public class DailyRosterTable extends Grid<DailyRosterRow> {
 			.setStyleGenerator(r -> r.workMap.getOrDefault(hour, false) ? "BUSY" : "")
 			.setWidth(70);
 		});
-		addColumn(r -> r.sum() + " Ã³ra").setCaption("");
+		addColumn(r -> r.sum() + " óra").setCaption("");
 		
 		FooterRow footerRow = appendFooterRow();
 		hours.stream().forEach(hour -> footerRow.getCell(String.valueOf(hour)).setText(dailyRoster.coverage(hour) + ""));
